@@ -72,7 +72,7 @@ def call (Map configMap){
             stage('Trigger DEV Deploy') {
                 steps {
                     script {
-                        build job: "ROBOSHOP/${COMPONENT}-deploy",
+                        build job: "ROBOSHOP/${config.COMPONENT}-deploy",
                             wait: false, // Wait for completion
                             propagate: false, // Propagate status
                             parameters: [
