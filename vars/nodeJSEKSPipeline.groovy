@@ -62,26 +62,26 @@ def call (Map configMap){
                 }
             }
             
-            stage('Trigger DEV Deploy') {
-                steps {
-                    script {
-                        build job: 'ROBOSHOP/catalogue-deploy'
-                    }
-                }
-            }
             // stage('Trigger DEV Deploy') {
             //     steps {
             //         script {
-            //             build job: "../${COMPONENT}-deploy",
-            //                 wait: false, // Wait for completion
-            //                 propagate: false, // Propagate status
-            //                 parameters: [
-            //                     string(name: 'appVersion', value: "${appVersion}"),
-            //                     string(name: 'deploy_to', value: "dev")
-            //                 ]
+            //             build job: 'ROBOSHOP/catalogue-deploy'
             //         }
             //     }
             // }
+            stage('Trigger DEV Deploy') {
+                steps {
+                    script {
+                        build job: 'ROBOSHOP/catalogue-deploy',
+                            wait: false, // Wait for completion
+                            propagate: false, // Propagate status
+                            parameters: [
+                                string(name: 'appVersion', value: "${appVersion}"),
+                                string(name: 'deploy_to', value: "dev")
+                            ]
+                    }
+                }
+            }
 
         }
 
