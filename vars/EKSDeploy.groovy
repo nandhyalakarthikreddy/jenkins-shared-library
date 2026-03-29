@@ -25,26 +25,45 @@ def call (Map configMap){
         } */
         // This is build section
         stages {
-            
-            stage('Deploy') {
-                when{
-                    expression { deploy_to == "dev" || deploy_to = "qa" || deploy_to = "qa" }
-                }
-                steps {
-                    script{
-                        withAWS(region:'us-east-1',credentials:'aws-creds') {
-                            sh """
-                                set -e
-                                aws eks update-kubeconfig --region ${REGION} --name ${PROJECT}-${deploy_to}
-                                kubectl get nodes
-                                sed -i "s/IMAGE_VERSION/${appVersion}/g" values.yaml
-                                helm upgrade --install ${COMPONENT} -f values-${deploy_to}.yaml -n ${PROJECT} --atomic --wait --timeout=5m .
-                                #kubectl apply -f ${COMPONENT}-${deploy_to}.yaml
-                            """
+
+                stage('Deploy') {
+                    when{
+                        expression { deploy_to in ["dev", "qa"] }
+                    }
+                    steps {
+                        script{
+                            withAWS(region:'us-east-1',credentials:'aws-creds') {
+                                sh """
+                                    set -e
+                                    aws eks update-kubeconfig --region ${REGION} --name ${PROJECT}-${deploy_to}
+                                    kubectl get nodes
+                                    sed -i "s/IMAGE_VERSION/${appVersion}/g" values.yaml
+                                    helm upgrade --install ${COMPONENT} -f values-${deploy_to}.yaml -n ${PROJECT} --atomic --wait --timeout=5m .
+                                """
+                            }
                         }
                     }
                 }
-            }
+            
+            // stage('Deploy') {
+            //     when{
+            //         expression { deploy_to == "dev" || deploy_to = "qa" || deploy_to = "qa" }
+            //     }
+            //     steps {
+            //         script{
+            //             withAWS(region:'us-east-1',credentials:'aws-creds') {
+            //                 sh """
+            //                     set -e
+            //                     aws eks update-kubeconfig --region ${REGION} --name ${PROJECT}-${deploy_to}
+            //                     kubectl get nodes
+            //                     sed -i "s/IMAGE_VERSION/${appVersion}/g" values.yaml
+            //                     helm upgrade --install ${COMPONENT} -f values-${deploy_to}.yaml -n ${PROJECT} --atomic --wait --timeout=5m .
+            //                     #kubectl apply -f ${COMPONENT}-${deploy_to}.yaml
+            //                 """
+            //             }
+            //         }
+            //     }
+            // }
             stage('Functional Testing'){
                 when{
                     expression { deploy_to == "dev" }
