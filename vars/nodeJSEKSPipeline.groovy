@@ -73,8 +73,8 @@ def call (Map configMap){
                 steps {
                     script {
                         build job: "ROBOSHOP/${configMap.component}-deploy",
-                            wait: false, // Wait for completion
-                            propagate: false, // Propagate status
+                            wait: false, // do not wait for the triggered job to finish
+                            propagate: false, // do not fail the current pipeline even trigger fail
                             parameters: [
                                 string(name: 'appVersion', value: "${appVersion}"),
                                 string(name: 'deploy_to', value: "dev")
